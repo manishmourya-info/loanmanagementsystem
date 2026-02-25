@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: loan-management-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loan_management
+      MYSQL_USER: loan_admin
+      MYSQL_PASSWORD: admin123
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'false'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 5s
+      retries: 10
+      interval: 3s
+    networks:
+      - loan-network
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+      - '--max_connections=100'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: loan-management-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/loan_management?useUnicode=true&characterEncoding=utf8mb4
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_FLYWAY_ENABLED: 'true'
+      JAVA_OPTS: '-XX:+UseG1GC -XX:MaxRAMPercentage=75 -XX:+UseStringDeduplication'
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - loan-network
+    restart: unless-stopped
+
+  # Optional: MySQL UI management tool
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: loan-management-phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8081:80"
+    networks:
+      - loan-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  loan-network:
+    driver: bridge

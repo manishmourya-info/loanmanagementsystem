@@ -1,0 +1,211 @@
+1) Install VS code
+2) Speckit - https://github.com/github/spec-kit
+	Install python
+	Install uv
+3) Speckit Video - https://www.youtube.com/watch?v=a9eR1xsfvHg
+4) Setup up the development Environment
+
+
+
+Technology Stack
+
+Core Platform
+Component	 		Technology	Version
+Language			Java	17 (LTS)
+Framework			Spring Boot	3.2.0
+Build Tool			Apache Maven	3.9.6
+Container Runtime	Docker	Latest
+Database			MySQL	8.0
+Data Integration    flyway migration
+Docker				Google gib
+
+==================================CONSTITUTION=======================================
+
+
+
+// project principle & standards
+
+/speckit.constitution Create Consumer Finance app for (personal loan,Calculate EMI, loan repayment). Use spring boot 3 and Java 17 for development.
+
+
+
+===================================SPECIFY=========================================
+
+// define what to build (no technical information)
+
+/speckit.specify
+	Consumer Finance app with three apis
+		Personal loan  API
+		Calculate EMI  API
+		Loan repayment API
+		Validate user input
+		Log actions
+		Low response time		
+
+
+==================================PLAN=========================================
+
+/plan implementation plan
+
+
+Framework			Spring Boot	3.2.0
+Build Tool			Apache Maven	3.9.6
+Language			Java	17 (LTS)
+Database			MySQL	8.0
+Data Integration    flyway migration
+Docker				Google gib
+
+Personal loan  API
+	Apply for personal loan
+	Get loan by ID
+	Get all loans for a customer
+	Loan approval / rejection
+	
+Calculate EMI  API
+	API that accept (Loan amount,Interest rate,Tenure)
+	API that return (EMI, Total interest, Total payment)
+	
+The API should:
+	Accept a repayment for a loan
+	Validate payment amount
+	Update outstanding balance
+	Update EMI schedule
+	Change loan status when fully paid
+	Store transaction history
+	
+
+====================================TASK=======================================	
+
+/tasks	 break down plan into actionable  steps
+
+		
+		=======================================================		
+		Data Model
+			Design entities:
+				Customer
+				Loan
+				EMI Schedule
+				Repayment Transaction
+		
+
+		Personal Loan API
+		========================================================
+		
+		 Apply for Personal Loan:
+			Design loan request payload (customerId, amount, tenure, interestRate, etc.)
+			Validate input data
+			Check customer eligibility rules (optional/business rule)
+			Create loan record with status = PENDING
+			Generate repayment schedule (EMI plan)
+			Persist loan + schedule in DB
+			Return loan application response
+
+		 Get Loan by ID
+			Create endpoint to fetch loan by loanId
+			Validate loanId
+			Fetch loan details from DB
+			Include:
+				Loan summary
+				Outstanding balance
+				EMI schedule
+				Status
+			Return response DTO
+
+		  
+		  Get All Loans for a Customer
+			Create endpoint using customerId
+			Validate customerId
+			Fetch all loans mapped to customer
+			Add pagination & sorting (recommended)
+			Return loan list with summary info
+
+		  Loan Approval / Rejection
+			Create approval/rejection endpoint
+			Validate loan exists & is in PENDING
+			Add authorization check (admin/credit officer)
+			Update loan status:
+				APPROVED → activate EMI schedule
+				REJECTED → store reason
+			Store decision metadata (approvedBy, date, remarks)
+			Trigger events/notifications (optional)
+
+	 
+	 EMI Calculation API
+	 ==================================================================================
+	 
+		Request Handling
+			Create endpoint accepting:
+				Loan amount
+				Interest rate
+				Tenure
+				
+		EMI Calculation Logic
+			Implement EMI formula
+			Calculate:
+				EMI amount
+				Total interest
+				Total payment
+				
+		Response
+			Return calculated values
+			
+	
+	Loan Repayment API
+	=================================================================================
+	
+		Accept Repayment:
+			Create repayment endpoint
+			Validate:
+				Loan exists
+				Loan is ACTIVE
+				Payment > 0
+
+		Validate Payment Amount
+			Check for:
+				Overpayment handling rule
+				Partial payment support
+				EMI due vs advance payment logic
+			Apply business rules
+
+
+		Update Outstanding Balance
+			Deduct paid amount
+			Recalculate remaining principal
+			Update next EMI dues
+
+
+		Update EMI Schedule
+			Mark EMI as:
+					PAID (full payment)
+					PARTIALLY_PAID
+			Adjust future EMIs if prepayment happens (if supported)
+
+		
+		Change Loan Status When Fully Paid
+			Detect balance = 0
+			Update status → CLOSED
+			Set closure date
+			Stop future EMI generation
+
+
+
+		Store Transaction History
+			Create repayment transaction entity
+			Store:
+				transactionId
+				loanId
+				amount
+				payment date
+				payment mode
+				reference number
+
+
+
+//implement excute tasks & test 
+
+
+
+
+
+
+
