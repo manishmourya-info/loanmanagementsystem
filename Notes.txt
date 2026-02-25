@@ -65,7 +65,7 @@ Docker				Google gib
 
 ==================================PLAN=========================================
 
-/plan implementation plan
+/speckit.plan  implementation plan
 
 
 Framework			Spring Boot	3.2.0
@@ -97,16 +97,14 @@ Bypass Spring Security for development/testing
 
 ====================================TASK=======================================	
 
-/tasks	 break down plan into actionable  steps
+/speckit.tasks 	 break down plan into actionable  steps
 
 
 ====================================IMPLEMENT EXECUTE TASKS=======================================	
 
 //implement excute tasks & test 
 
-
-
-
+/speckit.implement
 
 
 
