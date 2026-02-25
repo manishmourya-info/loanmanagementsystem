@@ -1,13 +1,33 @@
 1) Install VS code
+	https://code.visualstudio.com/download
+	
 2) Speckit - https://github.com/github/spec-kit
+	
 	Install python
+	https://www.python.org/downloads/
+	
 	Install uv
+	uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+	
+	Git
+	https://git-scm.com/install/
+
 3) Speckit Video - https://www.youtube.com/watch?v=a9eR1xsfvHg
 4) Setup up the development Environment
 
+	# Create new project
+	specify init <PROJECT_NAME>
+
+	# Or initialize in existing project
+	specify init . --ai claude
+	# or
+	specify init --here --ai claude
+
+	# Check installed tools
+	specify check
 
 
-Technology Stack
+Technology Stack - requirement
 
 Core Platform
 Component	 		Technology	Version
@@ -73,133 +93,14 @@ The API should:
 	Change loan status when fully paid
 	Store transaction history
 	
+Bypass Spring Security for development/testing
 
 ====================================TASK=======================================	
 
 /tasks	 break down plan into actionable  steps
 
-		
-		=======================================================		
-		Data Model
-			Design entities:
-				Customer
-				Loan
-				EMI Schedule
-				Repayment Transaction
-		
 
-		Personal Loan API
-		========================================================
-		
-		 Apply for Personal Loan:
-			Design loan request payload (customerId, amount, tenure, interestRate, etc.)
-			Validate input data
-			Check customer eligibility rules (optional/business rule)
-			Create loan record with status = PENDING
-			Generate repayment schedule (EMI plan)
-			Persist loan + schedule in DB
-			Return loan application response
-
-		 Get Loan by ID
-			Create endpoint to fetch loan by loanId
-			Validate loanId
-			Fetch loan details from DB
-			Include:
-				Loan summary
-				Outstanding balance
-				EMI schedule
-				Status
-			Return response DTO
-
-		  
-		  Get All Loans for a Customer
-			Create endpoint using customerId
-			Validate customerId
-			Fetch all loans mapped to customer
-			Add pagination & sorting (recommended)
-			Return loan list with summary info
-
-		  Loan Approval / Rejection
-			Create approval/rejection endpoint
-			Validate loan exists & is in PENDING
-			Add authorization check (admin/credit officer)
-			Update loan status:
-				APPROVED → activate EMI schedule
-				REJECTED → store reason
-			Store decision metadata (approvedBy, date, remarks)
-			Trigger events/notifications (optional)
-
-	 
-	 EMI Calculation API
-	 ==================================================================================
-	 
-		Request Handling
-			Create endpoint accepting:
-				Loan amount
-				Interest rate
-				Tenure
-				
-		EMI Calculation Logic
-			Implement EMI formula
-			Calculate:
-				EMI amount
-				Total interest
-				Total payment
-				
-		Response
-			Return calculated values
-			
-	
-	Loan Repayment API
-	=================================================================================
-	
-		Accept Repayment:
-			Create repayment endpoint
-			Validate:
-				Loan exists
-				Loan is ACTIVE
-				Payment > 0
-
-		Validate Payment Amount
-			Check for:
-				Overpayment handling rule
-				Partial payment support
-				EMI due vs advance payment logic
-			Apply business rules
-
-
-		Update Outstanding Balance
-			Deduct paid amount
-			Recalculate remaining principal
-			Update next EMI dues
-
-
-		Update EMI Schedule
-			Mark EMI as:
-					PAID (full payment)
-					PARTIALLY_PAID
-			Adjust future EMIs if prepayment happens (if supported)
-
-		
-		Change Loan Status When Fully Paid
-			Detect balance = 0
-			Update status → CLOSED
-			Set closure date
-			Stop future EMI generation
-
-
-
-		Store Transaction History
-			Create repayment transaction entity
-			Store:
-				transactionId
-				loanId
-				amount
-				payment date
-				payment mode
-				reference number
-
-
+====================================IMPLEMENT EXECUTE TASKS=======================================	
 
 //implement excute tasks & test 
 
