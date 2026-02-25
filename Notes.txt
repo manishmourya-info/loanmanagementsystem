@@ -45,7 +45,7 @@ Docker				Google gib
 
 // project principle & standards
 
-/speckit.constitution Create Consumer Finance app for (personal loan,Calculate EMI, loan repayment). Use spring boot 3 and Java 17 for development.
+/speckit.constitution Create Consumer Finance app for (personal loan,Calculate EMI, loan repayment).
 
 
 
@@ -93,7 +93,6 @@ The API should:
 	Change loan status when fully paid
 	Store transaction history
 	
-Bypass Spring Security for development/testing
 
 ====================================TASK=======================================	
 
@@ -104,7 +103,7 @@ Bypass Spring Security for development/testing
 
 //implement excute tasks & test 
 
-/speckit.implement
+/speckit.implement Bypass Spring Security for development/testing
 
 
 
