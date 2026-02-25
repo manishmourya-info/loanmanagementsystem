@@ -1,7 +1,12 @@
 spring:
   application:
     name: loan-management-system
-    
+  
+  security:
+    user:
+      name: admin
+      password: admin
+  
   jpa:
     hibernate:
       ddl-auto: create-drop
