@@ -137,6 +137,26 @@ public class ConsumerController {
     }
 
     /**
+     * PUT /consumers/{consumerId}/kyc-status - Update KYC status
+     * T017: Update KYC status endpoint
+     */
+    @PutMapping("/{consumerId}/kyc-status")
+    @Operation(summary = "Update KYC status", description = "Updates the Know Your Customer (KYC) verification status of a consumer")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "KYC status updated successfully",
+                     content = @Content(schema = @Schema(implementation = ConsumerResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Consumer not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<ConsumerResponse> updateKYCStatus(
+            @PathVariable UUID consumerId,
+            @RequestParam String status) {
+        log.info("Updating KYC status for consumer: {}", consumerId);
+        ConsumerResponse response = consumerService.updateKYCStatus(consumerId, status);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * POST /consumers/{consumerId}/suspend - Suspend consumer account
      * T017: Suspend consumer endpoint
      */
@@ -172,5 +192,22 @@ public class ConsumerController {
         log.info("Deactivating consumer: {}", consumerId);
         ConsumerResponse response = consumerService.deactivateConsumer(consumerId);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * DELETE /consumers/{consumerId} - Delete consumer
+     * T017: Delete consumer endpoint
+     */
+    @DeleteMapping("/{consumerId}")
+    @Operation(summary = "Delete consumer", description = "Permanently deletes a consumer account and all associated data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Consumer deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Consumer not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Void> deleteConsumer(@PathVariable UUID consumerId) {
+        log.info("Deleting consumer: {}", consumerId);
+        consumerService.deleteConsumer(consumerId);
+        return ResponseEntity.noContent().build();
     }
 }

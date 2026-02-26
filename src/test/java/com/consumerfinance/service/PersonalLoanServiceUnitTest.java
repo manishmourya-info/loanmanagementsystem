@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Personal Loan Service Unit Tests")
-class PersonalLoanServiceTest {
+class PersonalLoanServiceUnitTest {
 
     @Mock
     private PersonalLoanRepository loanRepository;

@@ -383,4 +383,29 @@ public class PersonalLoanService {
                 .build();
     }
 
+    /**
+     * Get all loans for a consumer by consumer ID (alias for getConsumerLoans).
+     *
+     * @param consumerId the consumer ID
+     * @return list of consumer's loans
+     */
+    @Transactional(readOnly = true)
+    public List<LoanResponse> getLoansByConsumer(UUID consumerId) {
+        return getConsumerLoans(consumerId);
+    }
+
+    /**
+     * Get all pending loans across all consumers.
+     *
+     * @return list of pending loans
+     */
+    @Transactional(readOnly = true)
+    public List<LoanResponse> getPendingLoans() {
+        log.info("Retrieving all pending loans");
+        List<PersonalLoan> loans = loanRepository.findByStatus(PersonalLoan.LoanStatus.PENDING);
+        return loans.stream()
+                .map(this::mapToLoanResponse)
+                .collect(Collectors.toList());
+    }
+
 }

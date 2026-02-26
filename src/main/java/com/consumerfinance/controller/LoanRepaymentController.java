@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Positive;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,7 @@ public class LoanRepaymentController {
             @Parameter(description = "Installment number", example = "1")
             Integer installmentNumber,
             @RequestParam
+            @Positive(message = "Amount paid must be greater than zero")
             @Parameter(description = "Amount being paid", example = "9638.22")
             BigDecimal amountPaid) {
         log.info("REST: POST /api/v1/repayments/{}/installment/{}/pay - Processing payment of {}",

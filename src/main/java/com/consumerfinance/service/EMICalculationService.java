@@ -5,6 +5,7 @@ import com.consumerfinance.dto.EMICalculationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
@@ -17,6 +18,7 @@ public class EMICalculationService {
 
     private static final int SCALE = 2;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+    private static final MathContext MATH_CONTEXT = new MathContext(20, RoundingMode.HALF_UP);
 
     /**
      * Calculate EMI using the formula: EMI = P * r * (1 + r)^n / ((1 + r)^n - 1)
@@ -41,8 +43,8 @@ public class EMICalculationService {
 
         // Calculate EMI using amortization formula
         BigDecimal emi = calculateMonthlyEMI(principal, monthlyRate, tenureMonths);
-        BigDecimal totalAmount = emi.multiply(BigDecimal.valueOf(tenureMonths)).setScale(SCALE, ROUNDING_MODE);
-        BigDecimal totalInterest = totalAmount.subtract(principal).setScale(SCALE, ROUNDING_MODE);
+        BigDecimal totalAmount = emi.multiply(BigDecimal.valueOf(tenureMonths), MATH_CONTEXT).setScale(SCALE, ROUNDING_MODE);
+        BigDecimal totalInterest = totalAmount.subtract(principal, MATH_CONTEXT).setScale(SCALE, ROUNDING_MODE);
 
         log.info("EMI Calculation Result - Monthly EMI: {}, Total Interest: {}", emi, totalInterest);
 
@@ -60,7 +62,7 @@ public class EMICalculationService {
      * Calculate monthly EMI using the standard amortization formula.
      *
      * @param principal the principal amount
-     * @param monthlyRate the monthly interest rate as a decimal (e.g., 0.01 for 1%)
+     * @param monthlyRate the monthly interest rate as a decimal (e.g., 0.00875 for 10.5% annual)
      * @param tenureMonths the number of months
      * @return the monthly EMI amount
      */
@@ -70,23 +72,53 @@ public class EMICalculationService {
             return principal.divide(BigDecimal.valueOf(tenureMonths), SCALE, ROUNDING_MODE);
         }
 
-        // (1 + r)
-        BigDecimal onePlusR = BigDecimal.ONE.add(monthlyRate);
+        // (1 + r) with high precision
+        BigDecimal onePlusR = BigDecimal.ONE.add(monthlyRate, MATH_CONTEXT);
 
-        // (1 + r)^n
-        BigDecimal onePlusRPowerN = onePlusR.pow(tenureMonths);
+        // (1 + r)^n using BigDecimal power method with precision handling
+        BigDecimal onePlusRPowerN = calculatePower(onePlusR, tenureMonths);
 
         // (1 + r)^n - 1
-        BigDecimal numeratorPart = onePlusRPowerN.subtract(BigDecimal.ONE);
+        BigDecimal numeratorPart = onePlusRPowerN.subtract(BigDecimal.ONE, MATH_CONTEXT);
 
         // r * (1 + r)^n
-        BigDecimal numerator = monthlyRate.multiply(onePlusRPowerN);
+        BigDecimal numerator = monthlyRate.multiply(onePlusRPowerN, MATH_CONTEXT);
 
         // r * (1 + r)^n / ((1 + r)^n - 1)
-        BigDecimal factor = numerator.divide(numeratorPart, 10, ROUNDING_MODE);
+        BigDecimal factor = numerator.divide(numeratorPart, MATH_CONTEXT);
 
         // EMI = Principal * factor
-        return principal.multiply(factor).setScale(SCALE, ROUNDING_MODE);
+        return principal.multiply(factor, MATH_CONTEXT).setScale(SCALE, ROUNDING_MODE);
+    }
+
+    /**
+     * Calculate power using BigDecimal with proper precision handling.
+     * Uses exponentiation by squaring for efficiency.
+     *
+     * @param base the base value
+     * @param exponent the exponent (must be positive)
+     * @return base^exponent
+     */
+    private BigDecimal calculatePower(BigDecimal base, int exponent) {
+        if (exponent == 0) {
+            return BigDecimal.ONE;
+        }
+        if (exponent == 1) {
+            return base;
+        }
+
+        BigDecimal result = BigDecimal.ONE;
+        BigDecimal tempBase = base;
+
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = result.multiply(tempBase, MATH_CONTEXT);
+            }
+            tempBase = tempBase.multiply(tempBase, MATH_CONTEXT);
+            exponent /= 2;
+        }
+
+        return result;
     }
 
     /**
@@ -96,7 +128,7 @@ public class EMICalculationService {
      * @return the monthly rate as a decimal (e.g., 0.00875 for 10.5% annual)
      */
     private BigDecimal getMonthlyRate(BigDecimal annualRate) {
-        return annualRate.divide(BigDecimal.valueOf(12).multiply(BigDecimal.valueOf(100)), 10, ROUNDING_MODE);
+        return annualRate.divide(BigDecimal.valueOf(12).multiply(BigDecimal.valueOf(100), MATH_CONTEXT), MATH_CONTEXT);
     }
 
     /**
@@ -120,3 +152,4 @@ public class EMICalculationService {
     }
 
 }
+

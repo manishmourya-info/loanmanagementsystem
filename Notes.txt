@@ -128,7 +128,7 @@ Unit Test cases:
 	Detects changes
 	Regenerates relevant unit tests
 	Prevents outdated tests
-	Maintains high coverage
+	Maintains high test coverage
 
 Flyway:
 	update all database scripts as per modifed or create entity.

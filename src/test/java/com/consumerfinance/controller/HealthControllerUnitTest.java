@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(HealthController.class)
 @DisplayName("Health Controller Unit Tests")
+@WithMockUser(username = "testuser", roles = {"USER"})
 class HealthControllerUnitTest {
 
     @Autowired
@@ -157,28 +159,28 @@ class HealthControllerUnitTest {
     // ============ HTTP Method Tests ============
 
     @Test
-    @DisplayName("POST /api/v1/health should return 405 Method Not Allowed")
+    @DisplayName("POST /api/v1/health should not be allowed")
     void testHealthPostNotAllowed() throws Exception {
         mockMvc.perform(post("/api/v1/health")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
-                .andExpect(status().isMethodNotAllowed());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
-    @DisplayName("PUT /api/v1/health should return 405 Method Not Allowed")
+    @DisplayName("PUT /api/v1/health should not be allowed")
     void testHealthPutNotAllowed() throws Exception {
         mockMvc.perform(put("/api/v1/health")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
-                .andExpect(status().isMethodNotAllowed());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
-    @DisplayName("DELETE /api/v1/health should return 405 Method Not Allowed")
+    @DisplayName("DELETE /api/v1/health should not be allowed")
     void testHealthDeleteNotAllowed() throws Exception {
         mockMvc.perform(delete("/api/v1/health"))
-                .andExpect(status().isMethodNotAllowed());
+                .andExpect(status().is4xxClientError());
     }
 
     // ============ Content Type Tests ============

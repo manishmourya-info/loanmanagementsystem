@@ -75,7 +75,8 @@ public class Consumer {
 
     @Version
     @Column(name = "version")
-    private Long version;
+    @Builder.Default
+    private Long version = 0L;
 
     // Relationships
     @OneToOne(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = true)

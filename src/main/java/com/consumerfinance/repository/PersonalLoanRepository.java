@@ -48,5 +48,12 @@ public interface PersonalLoanRepository extends JpaRepository<PersonalLoan, UUID
      */
     List<PersonalLoan> findByConsumerAndStatus(Consumer consumer, PersonalLoan.LoanStatus status);
 
+    /**
+     * Find all loans with a specific status across all consumers.
+     * @param status the loan status
+     * @return list of loans with specified status
+     */
+    List<PersonalLoan> findByStatus(PersonalLoan.LoanStatus status);
+
 }
 

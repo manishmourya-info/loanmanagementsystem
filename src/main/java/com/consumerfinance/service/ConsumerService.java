@@ -230,6 +230,64 @@ public class ConsumerService {
     }
 
     /**
+     * Update KYC status for a consumer
+     */
+    public ConsumerResponse updateKYCStatus(UUID consumerId, String kycStatus) {
+        log.info("Updating KYC status for consumer: {}", consumerId);
+
+        Consumer consumer = consumerRepository.findById(consumerId)
+                .orElseThrow(() -> new ConsumerNotFoundException("Consumer not found: " + consumerId));
+
+        consumer.setKycStatus(Consumer.KYCStatus.valueOf(kycStatus.toUpperCase()));
+        consumer.setUpdatedAt(LocalDateTime.now());
+
+        Consumer updated = consumerRepository.save(consumer);
+        log.info("KYC status updated for consumer: {}", consumerId);
+
+        createAuditLog("KYC_STATUS_UPDATED", consumerId.toString(), consumer.getName(),
+                      "KYC status changed to " + kycStatus);
+
+        return mapToConsumerResponse(updated);
+    }
+
+    /**
+     * Delete a consumer
+     */
+    public void deleteConsumer(UUID consumerId) {
+        log.info("Deleting consumer: {}", consumerId);
+
+        Consumer consumer = consumerRepository.findById(consumerId)
+                .orElseThrow(() -> new ConsumerNotFoundException("Consumer not found: " + consumerId));
+
+        consumerRepository.delete(consumer);
+        log.info("Consumer deleted: {}", consumerId);
+
+        createAuditLog("CONSUMER_DELETED", consumerId.toString(), consumer.getName(),
+                      "Consumer account deleted");
+    }
+
+    /**
+     * Update consumer status (ACTIVE/INACTIVE)
+     */
+    public ConsumerResponse updateConsumerStatus(UUID consumerId, String status) {
+        log.info("Updating consumer status: {}", consumerId);
+
+        Consumer consumer = consumerRepository.findById(consumerId)
+                .orElseThrow(() -> new ConsumerNotFoundException("Consumer not found: " + consumerId));
+
+        consumer.setStatus(Consumer.ConsumerStatus.valueOf(status.toUpperCase()));
+        consumer.setUpdatedAt(LocalDateTime.now());
+
+        Consumer updated = consumerRepository.save(consumer);
+        log.info("Consumer status updated for consumer: {}", consumerId);
+
+        createAuditLog("CONSUMER_STATUS_UPDATED", consumerId.toString(), consumer.getName(),
+                      "Consumer status changed to " + status);
+
+        return mapToConsumerResponse(updated);
+    }
+
+    /**
      * Helper: Create audit log entry
      */
     private void createAuditLog(String action, String consumerId, String consumerName, String details) {
