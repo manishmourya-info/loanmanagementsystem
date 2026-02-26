@@ -29,9 +29,7 @@ CREATE TABLE IF NOT EXISTS vendors (
   INDEX idx_gst_number (gst_number) COMMENT 'GST number lookup',
   INDEX idx_status (status) COMMENT 'Filter by vendor status',
   INDEX idx_registration_date (registration_date) COMMENT 'Sort by registration date',
-  INDEX idx_created_at (created_at) COMMENT 'Sort by creation date',
-
-  PRIMARY KEY (vendor_id)
+  INDEX idx_created_at (created_at) COMMENT 'Sort by creation date'
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci

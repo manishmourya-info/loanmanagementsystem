@@ -40,9 +40,7 @@ CREATE TABLE IF NOT EXISTS loan_repayments (
   INDEX idx_status (status) COMMENT 'Find pending/overdue/paid EMIs',
   INDEX idx_due_date (due_date) COMMENT 'Identify upcoming/overdue payments',
   INDEX idx_paid_date (paid_date) COMMENT 'Query payment history',
-  INDEX idx_created_at (created_at) COMMENT 'Audit trail sorting',
-
-  PRIMARY KEY (id)
+  INDEX idx_created_at (created_at) COMMENT 'Audit trail sorting'
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci

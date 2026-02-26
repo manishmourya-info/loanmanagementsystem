@@ -36,9 +36,7 @@ CREATE TABLE IF NOT EXISTS principal_accounts (
   -- Indices for query performance
   INDEX idx_consumer_id (consumer_id) COMMENT 'Lookup by consumer',
   INDEX idx_verification_status (verification_status) COMMENT 'Filter by verification status',
-  INDEX idx_created_at (created_at) COMMENT 'Sort by creation date',
-
-  PRIMARY KEY (principal_account_id)
+  INDEX idx_created_at (created_at) COMMENT 'Sort by creation date'
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci

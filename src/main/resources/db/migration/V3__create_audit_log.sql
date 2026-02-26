@@ -22,9 +22,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
   INDEX idx_entity (entity_type, entity_id) COMMENT 'Find audit trail for specific entity',
   INDEX idx_action (action) COMMENT 'Filter by action type',
   INDEX idx_created_at (created_at) COMMENT 'Query by timestamp range',
-  INDEX idx_user_id (user_id) COMMENT 'Find actions by user',
-
-  PRIMARY KEY (id)
+  INDEX idx_user_id (user_id) COMMENT 'Find actions by user'
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci

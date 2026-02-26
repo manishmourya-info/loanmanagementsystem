@@ -33,10 +33,7 @@ CREATE TABLE IF NOT EXISTS personal_loans (
   INDEX idx_customer_id (customer_id) COMMENT 'Filter loans by customer',
   INDEX idx_status (status) COMMENT 'Filter loans by approval status',
   INDEX idx_created_at (created_at) COMMENT 'Sort loans by creation date',
-  INDEX idx_outstanding_balance (outstanding_balance) COMMENT 'Find loans with outstanding balance',
-
-  -- Storage configuration
-  PRIMARY KEY (id)
+  INDEX idx_outstanding_balance (outstanding_balance) COMMENT 'Find loans with outstanding balance'
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci
