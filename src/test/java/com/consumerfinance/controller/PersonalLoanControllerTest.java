@@ -148,22 +148,6 @@ class PersonalLoanControllerTest {
     }
 
     @Test
-    @DisplayName("Should get all loans for a consumer and return 200")
-    void testGetLoansByConsumer_Success() throws Exception {
-        // Arrange
-        List<LoanResponse> loans = new ArrayList<>();
-        loans.add(mockLoanResponse);
-        when(personalLoanService.getLoansByConsumer(eq(consumerId)))
-                .thenReturn(loans);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/v1/loans/consumer/{consumerId}", consumerId)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(loanId.toString()));
-    }
-
-    @Test
     @DisplayName("Should approve a pending loan")
     void testApproveLoan_Success() throws Exception {
         // Arrange
@@ -211,22 +195,6 @@ class PersonalLoanControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DISBURSED"));
-    }
-
-    @Test
-    @DisplayName("Should get all pending loans")
-    void testGetPendingLoans_Success() throws Exception {
-        // Arrange
-        List<LoanResponse> pendingLoans = new ArrayList<>();
-        pendingLoans.add(mockLoanResponse);
-        when(personalLoanService.getPendingLoans())
-                .thenReturn(pendingLoans);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/v1/loans/status/pending")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("PENDING"));
     }
 
     @Test

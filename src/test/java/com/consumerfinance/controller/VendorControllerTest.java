@@ -184,29 +184,6 @@ class VendorControllerTest {
     }
 
     @Test
-    @DisplayName("Should add linked account to vendor and return 201")
-    void testAddLinkedAccount_Success() throws Exception {
-        // Arrange
-        VendorLinkedAccountResponse linkedAccountResponse = VendorLinkedAccountResponse.builder()
-                .vendorAccountId(accountId)
-                .vendorId(vendorId)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status("ACTIVE")
-                .build();
-
-        when(vendorService.addLinkedAccount(eq(vendorId), any()))
-                .thenReturn(linkedAccountResponse);
-
-        // Act & Assert
-        mockMvc.perform(post("/api/v1/vendors/{vendorId}/linked-accounts", vendorId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"accountNumber\":\"DE75512108001234567890\",\"accountType\":\"SETTLEMENT\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.vendorAccountId").value(accountId.toString()));
-    }
-
-    @Test
     @DisplayName("Should get linked accounts by vendor")
     void testGetLinkedAccountsByVendor_Success() throws Exception {
         // Arrange

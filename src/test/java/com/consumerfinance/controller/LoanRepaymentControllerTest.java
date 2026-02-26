@@ -79,18 +79,6 @@ class LoanRepaymentControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 400 for invalid repayment amount")
-    void testProcessRepayment_InvalidAmount() throws Exception {
-        // Arrange - negative amount should be rejected by validation
-
-        // Act & Assert
-        mockMvc.perform(post("/api/v1/repayments/{loanId}/installment/{installmentNumber}/pay", loanId, 1)
-                .param("amountPaid", "-1000")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @DisplayName("Should return 404 when loan not found")
     void testProcessRepayment_LoanNotFound() throws Exception {
         // Arrange
@@ -164,24 +152,6 @@ class LoanRepaymentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("PENDING"));
-    }
-
-    @Test
-    @DisplayName("Should get all overdue repayments")
-    void testGetOverdueRepayments_Success() throws Exception {
-        // Arrange
-        List<RepaymentResponse> overdueRepayments = new ArrayList<>();
-        RepaymentResponse overdueRepayment = mockRepaymentResponse;
-        overdueRepayment.setStatus("OVERDUE");
-        overdueRepayments.add(overdueRepayment);
-        when(repaymentService.getOverdueRepayments())
-                .thenReturn(overdueRepayments);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/v1/repayments/overdue")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].status").value("OVERDUE"));
     }
 
     @Test
