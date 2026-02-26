@@ -1,6 +1,7 @@
 package com.consumerfinance.repository;
 
 import com.consumerfinance.domain.LoanRepayment;
+import com.consumerfinance.domain.PersonalLoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,31 +17,40 @@ public interface LoanRepaymentRepository extends JpaRepository<LoanRepayment, Lo
 
     /**
      * Find all repayments for a specific loan.
-     * @param loanId the loan ID
-     * @return list of repayments for the loan
      */
-    List<LoanRepayment> findByLoanId(Long loanId);
+    List<LoanRepayment> findByLoan(PersonalLoan loan);
 
     /**
-     * Find repayment by loan ID and installment number.
-     * @param loanId the loan ID
-     * @param installmentNumber the installment number
-     * @return optional containing the repayment if found
+     * Find repayment by loan and installment number.
      */
-    Optional<LoanRepayment> findByLoanIdAndInstallmentNumber(Long loanId, Integer installmentNumber);
+    Optional<LoanRepayment> findByLoanAndInstallmentNumber(PersonalLoan loan, Integer installmentNumber);
+
+    /**
+     * Find by loan ID (UUID) - using custom query
+     */
+    @Query("SELECT r FROM LoanRepayment r WHERE r.loan.id = :loanId")
+    List<LoanRepayment> findByLoanId(java.util.UUID loanId);
+
+    /**
+     * Find repayment by loan ID (UUID) and installment number
+     */
+    @Query("SELECT r FROM LoanRepayment r WHERE r.loan.id = :loanId AND r.installmentNumber = :installmentNumber")
+    Optional<LoanRepayment> findByLoanIdAndInstallmentNumber(java.util.UUID loanId, Integer installmentNumber);
 
     /**
      * Find all overdue repayments.
-     * @return list of overdue repayments
      */
     @Query("SELECT r FROM LoanRepayment r WHERE r.status = 'OVERDUE'")
     List<LoanRepayment> findOverdueRepayments();
 
     /**
      * Count pending repayments for a loan.
-     * @param loanId the loan ID
-     * @return count of pending repayments
      */
-    long countByLoanIdAndStatus(Long loanId, LoanRepayment.RepaymentStatus status);
+    long countByLoanAndStatus(PersonalLoan loan, LoanRepayment.RepaymentStatus status);
 
+    /**
+     * Count pending repayments for a loan by ID (UUID)
+     */
+    @Query("SELECT COUNT(r) FROM LoanRepayment r WHERE r.loan.id = :loanId AND r.status = :status")
+    long countByLoanIdAndStatus(java.util.UUID loanId, LoanRepayment.RepaymentStatus status);
 }

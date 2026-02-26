@@ -1,22 +1,26 @@
 package com.consumerfinance.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
- * PersonalLoan entity represents a personal loan issued to a customer.
- * Contains core loan information including amount, duration, and interest rate.
- * Maintains ACID compliance for financial transactions.
+ * PersonalLoan Entity (T009)
+ * 
+ * Represents a personal loan application and contract with financial precision using BigDecimal.
+ * All monetary fields use DECIMAL(19,2) for precision without floating-point errors.
+ * Uses optimistic locking (@Version) and pessimistic locking support for concurrent operations.
  */
 @Entity
 @Table(name = "personal_loans", indexes = {
-    @Index(name = "idx_customer_id", columnList = "customer_id"),
+    @Index(name = "idx_consumer_id", columnList = "consumer_id"),
     @Index(name = "idx_status", columnList = "status"),
     @Index(name = "idx_created_at", columnList = "created_at")
 })
@@ -27,64 +31,93 @@ import java.util.List;
 public class PersonalLoan {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "loan_id")
+    private UUID id;
 
-    @Column(nullable = false, length = 50)
-    private String customerId;
+    @NotNull(message = "Consumer is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consumer_id", nullable = false, foreignKey = @ForeignKey(name = "fk_loan_consumer"))
+    private Consumer consumer;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @NotNull(message = "Principal amount is required")
+    @DecimalMin(value = "10000.00", message = "Principal amount must be at least 10,000")
+    @DecimalMax(value = "50000000.00", message = "Principal amount cannot exceed 50,000,000")
+    @Column(name = "principal", nullable = false, precision = 19, scale = 2)
     private BigDecimal principalAmount;
 
-    @Column(nullable = false, precision = 5, scale = 2)
+    @NotNull(message = "Annual interest rate is required")
+    @DecimalMin(value = "0.01", message = "Interest rate must be at least 0.01%")
+    @DecimalMax(value = "36.00", message = "Interest rate cannot exceed 36%")
+    @Column(name = "annual_interest_rate", nullable = false, precision = 5, scale = 2)
     private BigDecimal annualInterestRate;
 
-    @Column(nullable = false)
+    @NotNull(message = "Tenure in months is required")
+    @Min(value = 12, message = "Tenure must be at least 12 months")
+    @Max(value = 360, message = "Tenure cannot exceed 360 months")
+    @Column(name = "tenure_months", nullable = false)
     private Integer loanTenureMonths;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @NotNull(message = "Monthly EMI is required")
+    @Column(name = "monthly_emi", nullable = false, precision = 19, scale = 2)
     private BigDecimal monthlyEMI;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(name = "total_interest_payable", precision = 19, scale = 2)
     private BigDecimal totalInterestPayable;
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal outstandingBalance;
+    @Column(name = "outstanding_balance", precision = 19, scale = 2)
+    @Builder.Default
+    private BigDecimal outstandingBalance = BigDecimal.ZERO;
 
-    @Column(nullable = false)
-    private Integer remainingTenure;
+    @Column(name = "remaining_tenure")
+    @Builder.Default
+    private Integer remainingTenure = 0;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private LoanStatus status;
+    @Column(name = "status", nullable = false, length = 20)
+    @Builder.Default
+    private LoanStatus status = LoanStatus.PENDING;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
 
-    @Column
+    @Column(name = "rejected_at")
     private LocalDateTime rejectedAt;
 
-    @Column
+    @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
-    @Column(length = 500)
+    @Column(name = "approval_remarks", length = 500)
     private String approvalRemarks;
 
-    @Column(length = 500)
+    @Column(name = "rejection_reason", length = 500)
     private String rejectionReason;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     // Relationship to LoanRepayment (one loan has many repayments)
     @OneToMany(mappedBy = "loan", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<LoanRepayment> repayments;
+    private Set<LoanRepayment> repayments;
 
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+            updatedAt = LocalDateTime.now();
         }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     /**

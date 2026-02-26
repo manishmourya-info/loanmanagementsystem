@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * Response DTO for personal loan details.
+ * Phase 4-6: T022-T028, T029-T034, T035-T038
  */
 @Data
 @NoArgsConstructor
@@ -18,8 +19,8 @@ import java.time.LocalDateTime;
 @Schema(description = "Personal loan details response")
 public class LoanResponse {
 
-    @Schema(description = "Unique loan identifier", example = "1")
-    private Long id;
+    @Schema(description = "Unique loan identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+    private String id;
 
     @Schema(description = "Customer ID", example = "CUST123456")
     private String customerId;
@@ -51,10 +52,23 @@ public class LoanResponse {
     @Schema(description = "Loan creation timestamp")
     private LocalDateTime createdAt;
 
+    @Schema(description = "Loan update timestamp")
+    private LocalDateTime updatedAt;
+
     @Schema(description = "Loan approval timestamp")
     private LocalDateTime approvedAt;
+
+    @Schema(description = "Loan rejection timestamp")
+    private LocalDateTime rejectedAt;
 
     @Schema(description = "Loan closure timestamp (if closed)")
     private LocalDateTime closedAt;
 
+    @Schema(description = "Approval remarks", example = "Approved with conditions")
+    private String approvalRemarks;
+
+    @Schema(description = "Rejection reason", example = "Insufficient income")
+    private String rejectionReason;
+
 }
+

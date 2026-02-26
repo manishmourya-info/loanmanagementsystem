@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +45,7 @@ public class LoanRepaymentService {
      * @throws InvalidRepaymentException if repayment cannot be processed
      */
     @Transactional
-    public RepaymentResponse processRepayment(Long loanId, Integer installmentNumber, BigDecimal amountPaid) {
+    public RepaymentResponse processRepayment(UUID loanId, Integer installmentNumber, BigDecimal amountPaid) {
         log.info("Processing repayment for Loan ID: {}, Installment: {}, Amount: {}", 
                 loanId, installmentNumber, amountPaid);
 
@@ -53,7 +54,7 @@ public class LoanRepaymentService {
                 .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + loanId));
 
         // Find repayment
-        LoanRepayment repayment = repaymentRepository.findByLoanIdAndInstallmentNumber(loanId, installmentNumber)
+        LoanRepayment repayment = repaymentRepository.findByLoanAndInstallmentNumber(loan, installmentNumber)
                 .orElseThrow(() -> new InvalidRepaymentException(
                         "Repayment not found for Loan ID: " + loanId + ", Installment: " + installmentNumber));
 
@@ -75,9 +76,9 @@ public class LoanRepaymentService {
         loan.setOutstandingBalance(loan.getOutstandingBalance().subtract(amountPaid));
         
         // Update remaining tenure
-        long pendingInstallments = repaymentRepository.countByLoanIdAndStatus(
-                loanId, LoanRepayment.RepaymentStatus.PENDING);
-        loan.setRemainingTenure((int) (loan.getLoanTenureMonths() - (loan.getLoanTenureMonths() - pendingInstallments)));
+        long pendingInstallments = repaymentRepository.countByLoanAndStatus(
+                loan, LoanRepayment.RepaymentStatus.PENDING);
+        loan.setRemainingTenure((int) pendingInstallments);
         
         loanRepository.save(loan);
 
@@ -93,9 +94,13 @@ public class LoanRepaymentService {
      * @return the repayment details
      * @throws InvalidRepaymentException if repayment not found
      */
-    public RepaymentResponse getRepayment(Long loanId, Integer installmentNumber) {
+    public RepaymentResponse getRepayment(UUID loanId, Integer installmentNumber) {
         log.info("Retrieving repayment for Loan ID: {}, Installment: {}", loanId, installmentNumber);
-        LoanRepayment repayment = repaymentRepository.findByLoanIdAndInstallmentNumber(loanId, installmentNumber)
+        
+        PersonalLoan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + loanId));
+        
+        LoanRepayment repayment = repaymentRepository.findByLoanAndInstallmentNumber(loan, installmentNumber)
                 .orElseThrow(() -> new InvalidRepaymentException(
                         "Repayment not found for Loan ID: " + loanId + ", Installment: " + installmentNumber));
         return mapToRepaymentResponse(repayment);
@@ -108,14 +113,14 @@ public class LoanRepaymentService {
      * @return list of repayments for the loan
      * @throws LoanNotFoundException if loan not found
      */
-    public List<RepaymentResponse> getRepaymentsByLoanId(Long loanId) {
+    public List<RepaymentResponse> getRepaymentsByLoanId(UUID loanId) {
         log.info("Retrieving all repayments for Loan ID: {}", loanId);
         
         // Verify loan exists
-        loanRepository.findById(loanId)
+        PersonalLoan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + loanId));
 
-        return repaymentRepository.findByLoanId(loanId).stream()
+        return repaymentRepository.findByLoan(loan).stream()
                 .map(this::mapToRepaymentResponse)
                 .collect(Collectors.toList());
     }
@@ -126,9 +131,13 @@ public class LoanRepaymentService {
      * @param loanId the loan ID
      * @return list of pending repayments
      */
-    public List<RepaymentResponse> getPendingRepaymentsByLoanId(Long loanId) {
+    public List<RepaymentResponse> getPendingRepaymentsByLoanId(UUID loanId) {
         log.info("Retrieving pending repayments for Loan ID: {}", loanId);
-        return repaymentRepository.findByLoanId(loanId).stream()
+        
+        PersonalLoan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new LoanNotFoundException("Loan not found with ID: " + loanId));
+        
+        return repaymentRepository.findByLoan(loan).stream()
                 .filter(r -> r.getStatus().equals(LoanRepayment.RepaymentStatus.PENDING))
                 .map(this::mapToRepaymentResponse)
                 .collect(Collectors.toList());
@@ -176,7 +185,7 @@ public class LoanRepaymentService {
     private RepaymentResponse mapToRepaymentResponse(LoanRepayment repayment) {
         return RepaymentResponse.builder()
                 .id(repayment.getId())
-                .loanId(repayment.getLoan().getId())
+                .loanId(repayment.getLoan().getId().toString())
                 .installmentNumber(repayment.getInstallmentNumber())
                 .principalAmount(repayment.getPrincipalAmount())
                 .interestAmount(repayment.getInterestAmount())

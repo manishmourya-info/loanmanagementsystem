@@ -67,7 +67,6 @@ Docker				Google gib
 
 /speckit.plan  implementation plan
 
-
 Framework			Spring Boot	3.2.0
 Build Tool			Apache Maven	3.9.6
 Language			Java	17 (LTS)
@@ -75,23 +74,68 @@ Database			MySQL	8.0
 Data Integration    flyway migration
 Docker				Google gib
 
-Personal loan  API
-	Apply for personal loan
+
+App should be use mysql database as default.
+
+
+Consumer API
+	Purpose: onboarding + profile
+	Actions
+		Create consumer (KYC init)
+		GET consumers by id
+		Update consumers by with valid request
+		Get all consumers
+
+Principal Account API
+		Purpose:platform fund management
+		Actions:
+		    Principal has association with consumer
+			Create Principal Account with reference of consumer.
+			Update Principal Account with reference of consumer.
+			Get Principal Account by id
+			Get Principal Accounts by consumer
+
+Vendor API
+		Purpose: merchant onboarding
+		Actions:
+		Create vendor
+		Update vendor
+		Get vendor by id
+		Get vendor by name
+
+Vendor Linked Account API:
+		Purpose: where disbursal goes.
+		Mapped vendor with Principal account.
+		Get Linked Account By vendor
+		Get Linked Account By Principal account
+
+Loan  API
+	Apply for loan for 
 	Get loan by ID
 	Get all loans for a customer
-	Loan approval / rejection
+	Loan approval / rejection / disburse / schedule 
 	
 Calculate EMI  API
 	API that accept (Loan amount,Interest rate,Tenure)
 	API that return (EMI, Total interest, Total payment)
 	
-The API should:
-	Accept a repayment for a loan
-	Validate payment amount
-	Update outstanding balance
-	Update EMI schedule
-	Change loan status when fully paid
-	Store transaction history
+Audit API should:
+	Store transaction history when with respect to loan creation, modification.
+	Get Audit logs based on time frame interval
+
+Unit Test cases:
+	Reads the current code
+	Detects changes
+	Regenerates relevant unit tests
+	Prevents outdated tests
+	Maintains high coverage
+
+Flyway:
+	update all database scripts as per modifed or create entity.
+	generate sample data file for each entity with proper releation.
+	
+Docker:
+	Generate or update docker image generation using google jib. 
 	
 
 ====================================TASK=======================================	
@@ -107,3 +151,4 @@ The API should:
 
 
 
+java -jar app.jar --spring.profiles.active=mysql

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * REST Controller for loan repayment operations.
@@ -51,8 +52,8 @@ public class LoanRepaymentController {
     })
     public ResponseEntity<RepaymentResponse> processRepayment(
             @PathVariable
-            @Parameter(description = "Unique loan identifier", example = "1")
-            Long loanId,
+            @Parameter(description = "Unique loan identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+            UUID loanId,
             @PathVariable
             @Parameter(description = "Installment number", example = "1")
             Integer installmentNumber,
@@ -83,8 +84,8 @@ public class LoanRepaymentController {
     })
     public ResponseEntity<RepaymentResponse> getRepayment(
             @PathVariable
-            @Parameter(description = "Unique loan identifier", example = "1")
-            Long loanId,
+            @Parameter(description = "Unique loan identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+            UUID loanId,
             @PathVariable
             @Parameter(description = "Installment number", example = "1")
             Integer installmentNumber) {
@@ -111,8 +112,8 @@ public class LoanRepaymentController {
     })
     public ResponseEntity<List<RepaymentResponse>> getRepaymentsByLoanId(
             @PathVariable
-            @Parameter(description = "Unique loan identifier", example = "1")
-            Long loanId) {
+            @Parameter(description = "Unique loan identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+            UUID loanId) {
         log.info("REST: GET /api/v1/repayments/{} - Retrieving all repayments", loanId);
         List<RepaymentResponse> response = repaymentService.getRepaymentsByLoanId(loanId);
         return ResponseEntity.ok(response);
@@ -135,8 +136,8 @@ public class LoanRepaymentController {
     })
     public ResponseEntity<List<RepaymentResponse>> getPendingRepaymentsByLoanId(
             @PathVariable
-            @Parameter(description = "Unique loan identifier", example = "1")
-            Long loanId) {
+            @Parameter(description = "Unique loan identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+            UUID loanId) {
         log.info("REST: GET /api/v1/repayments/{}/pending - Retrieving pending repayments", loanId);
         List<RepaymentResponse> response = repaymentService.getPendingRepaymentsByLoanId(loanId);
         return ResponseEntity.ok(response);

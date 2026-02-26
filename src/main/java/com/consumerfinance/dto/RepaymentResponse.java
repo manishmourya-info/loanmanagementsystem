@@ -21,8 +21,8 @@ public class RepaymentResponse {
     @Schema(description = "Repayment transaction ID", example = "1")
     private Long id;
 
-    @Schema(description = "Associated loan ID", example = "1")
-    private Long loanId;
+    @Schema(description = "Associated loan ID (UUID)", example = "550e8400-e29b-41d4-a716-446655440000")
+    private String loanId;
 
     @Schema(description = "Installment number", example = "1")
     private Integer installmentNumber;
