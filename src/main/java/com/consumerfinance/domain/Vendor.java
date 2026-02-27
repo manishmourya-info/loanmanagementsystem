@@ -17,11 +17,7 @@ import java.util.UUID;
  * Tracks vendor registration and business details.
  */
 @Entity
-@Table(name = "vendors", indexes = {
-        @Index(name = "idx_registration_number", columnList = "registration_number", unique = true),
-        @Index(name = "idx_gst_number", columnList = "gst_number", unique = true),
-        @Index(name = "idx_status", columnList = "status")
-})
+@Table(name = "vendors")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

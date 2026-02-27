@@ -17,12 +17,7 @@ import java.time.LocalDateTime;
  * No update/delete operations exposed - append-only audit log.
  */
 @Entity
-@Table(name = "audit_logs", indexes = {
-        @Index(name = "idx_loan_id", columnList = "loan_id"),
-        @Index(name = "idx_user_id", columnList = "user_id"),
-        @Index(name = "idx_action", columnList = "action"),
-        @Index(name = "idx_timestamp", columnList = "timestamp")
-})
+@Table(name = "audit_logs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

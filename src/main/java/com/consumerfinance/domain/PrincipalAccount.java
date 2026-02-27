@@ -19,9 +19,6 @@ import java.util.UUID;
 @Table(name = "principal_accounts", uniqueConstraints = {
         @UniqueConstraint(name = "uk_consumer_principal_account", columnNames = "consumer_id"),
         @UniqueConstraint(name = "uk_account_number", columnNames = "account_number")
-}, indexes = {
-        @Index(name = "idx_consumer_id", columnList = "consumer_id"),
-        @Index(name = "idx_verification_status", columnList = "verification_status")
 })
 @Data
 @NoArgsConstructor

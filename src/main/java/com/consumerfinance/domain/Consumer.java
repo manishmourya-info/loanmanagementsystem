@@ -18,11 +18,7 @@ import java.util.UUID;
  * Relationships: 1:1 with PrincipalAccount, 1:N with PersonalLoan
  */
 @Entity
-@Table(name = "consumers", indexes = {
-        @Index(name = "idx_email", columnList = "email", unique = true),
-        @Index(name = "idx_phone", columnList = "phone"),
-        @Index(name = "idx_status", columnList = "status")
-})
+@Table(name = "consumers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

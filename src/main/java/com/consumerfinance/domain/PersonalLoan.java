@@ -19,11 +19,7 @@ import java.util.UUID;
  * Uses optimistic locking (@Version) and pessimistic locking support for concurrent operations.
  */
 @Entity
-@Table(name = "personal_loans", indexes = {
-    @Index(name = "idx_consumer_id", columnList = "consumer_id"),
-    @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_created_at", columnList = "created_at")
-})
+@Table(name = "personal_loans")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

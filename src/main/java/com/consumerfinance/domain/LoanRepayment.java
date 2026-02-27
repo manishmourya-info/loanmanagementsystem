@@ -14,12 +14,7 @@ import java.time.LocalDateTime;
  * Maintains audit trail of payment history with transaction references.
  */
 @Entity
-@Table(name = "loan_repayments", indexes = {
-    @Index(name = "idx_loan_id", columnList = "loan_id"),
-    @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_due_date", columnList = "due_date"),
-    @Index(name = "idx_paid_date", columnList = "paid_date")
-}, uniqueConstraints = {
+@Table(name = "loan_repayments", uniqueConstraints = {
     @UniqueConstraint(name = "uk_loan_installment", columnNames = {"loan_id", "installment_number"})
 })
 @Data

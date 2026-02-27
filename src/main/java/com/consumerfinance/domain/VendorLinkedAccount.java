@@ -16,11 +16,7 @@ import java.util.UUID;
  * Each vendor can have max 5 linked accounts (validated in service layer).
  */
 @Entity
-@Table(name = "vendor_linked_accounts", indexes = {
-        @Index(name = "idx_vendor_id", columnList = "vendor_id"),
-        @Index(name = "idx_status", columnList = "status"),
-        @Index(name = "idx_account_number", columnList = "account_number", unique = true)
-})
+@Table(name = "vendor_linked_accounts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
