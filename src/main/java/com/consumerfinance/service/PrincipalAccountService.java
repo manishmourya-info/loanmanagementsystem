@@ -75,6 +75,7 @@ public class PrincipalAccountService {
                 .linkedDate(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .version(0L)
                 .build();
 
         PrincipalAccount saved = accountRepository.save(account);
