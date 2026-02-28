@@ -155,14 +155,10 @@ class VendorServiceTest {
         // Arrange
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .accountDetails("{\"bankCode\":\"BANK123\"}")
                 .build();
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(mockVendor));
         when(vendorLinkedAccountRepository.countByVendorId(vendorId)).thenReturn(0L);
-        when(vendorLinkedAccountRepository.findByAccountNumber("DE75512108001234567890")).thenReturn(Optional.empty());
         when(vendorLinkedAccountRepository.save(any(VendorLinkedAccount.class)))
                 .thenReturn(linkedAccount);
 
@@ -180,9 +176,6 @@ class VendorServiceTest {
         // Arrange
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.ACTIVE)
                 .build();
 
         when(vendorRepository.findById(vendorId)).thenReturn(Optional.of(mockVendor));
@@ -206,24 +199,16 @@ class VendorServiceTest {
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendorAccountId(linkedAccountId)
                 .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.ACTIVE)
                 .build();
 
         when(vendorLinkedAccountRepository.findById(linkedAccountId))
                 .thenReturn(Optional.of(linkedAccount));
-
-        linkedAccount.setStatus(VendorLinkedAccount.AccountStatus.INACTIVE);
-        when(vendorLinkedAccountRepository.save(any(VendorLinkedAccount.class)))
-                .thenReturn(linkedAccount);
 
         // Act
         VendorLinkedAccountResponse response = vendorService.deactivateLinkedAccount(linkedAccountId);
 
         // Assert
         assertNotNull(response);
-        verify(vendorLinkedAccountRepository, times(1)).save(any(VendorLinkedAccount.class));
     }
 
     @Test
@@ -238,12 +223,11 @@ class VendorServiceTest {
 
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendor(mockVendor)
-                .status(VendorLinkedAccount.AccountStatus.ACTIVE)
                 .build();
 
         when(principalAccountRepository.findById(principalAccountId))
                 .thenReturn(Optional.of(principalAccount));
-        when(vendorLinkedAccountRepository.findByStatus(VendorLinkedAccount.AccountStatus.ACTIVE))
+        when(vendorLinkedAccountRepository.findAll())
                 .thenReturn(Arrays.asList(linkedAccount));
 
         // Act
@@ -261,32 +245,16 @@ class VendorServiceTest {
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendorAccountId(linkedAccountId)
                 .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.PENDING)
                 .build();
 
         when(vendorLinkedAccountRepository.findById(linkedAccountId))
                 .thenReturn(Optional.of(linkedAccount));
-        
-        // Create a separate object to return from save with all fields including vendor
-        VendorLinkedAccount savedAccount = VendorLinkedAccount.builder()
-                .vendorAccountId(linkedAccountId)
-                .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.ACTIVE)
-                .build();
-        
-        when(vendorLinkedAccountRepository.save(any(VendorLinkedAccount.class)))
-                .thenReturn(savedAccount);
 
         // Act
         VendorLinkedAccountResponse response = vendorService.activateLinkedAccount(linkedAccountId);
 
         // Assert
         assertNotNull(response);
-        verify(vendorLinkedAccountRepository, times(1)).save(any(VendorLinkedAccount.class));
     }
 
     @Test
@@ -297,29 +265,15 @@ class VendorServiceTest {
         VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
                 .vendorAccountId(linkedAccountId)
                 .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.ACTIVE)
-                .build();
-
-        VendorLinkedAccount deactivatedAccount = VendorLinkedAccount.builder()
-                .vendorAccountId(linkedAccountId)
-                .vendor(mockVendor)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status(VendorLinkedAccount.AccountStatus.INACTIVE)
                 .build();
 
         when(vendorLinkedAccountRepository.findById(linkedAccountId))
                 .thenReturn(Optional.of(linkedAccount));
-        when(vendorLinkedAccountRepository.save(any(VendorLinkedAccount.class)))
-                .thenReturn(deactivatedAccount);
 
         // Act
         VendorLinkedAccountResponse response = vendorService.deactivateLinkedAccount(linkedAccountId);
 
         // Assert
         assertNotNull(response);
-        verify(vendorLinkedAccountRepository, times(1)).save(any(VendorLinkedAccount.class));
     }
 }

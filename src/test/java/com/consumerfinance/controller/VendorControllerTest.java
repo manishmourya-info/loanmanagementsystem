@@ -191,9 +191,6 @@ class VendorControllerTest {
         linkedAccounts.add(VendorLinkedAccountResponse.builder()
                 .vendorAccountId(accountId)
                 .vendorId(vendorId)
-                .accountNumber("DE75512108001234567890")
-                .accountType("SETTLEMENT")
-                .status("ACTIVE")
                 .build());
 
         when(vendorService.getLinkedAccountsByVendorId(eq(vendorId)))
@@ -214,7 +211,6 @@ class VendorControllerTest {
         VendorLinkedAccountResponse deactivatedAccount = VendorLinkedAccountResponse.builder()
                 .vendorAccountId(accountId)
                 .vendorId(vendorId)
-                .status("INACTIVE")
                 .build();
 
         when(vendorService.deactivateLinkedAccount(eq(accountId)))
@@ -223,8 +219,7 @@ class VendorControllerTest {
         // Act & Assert
         mockMvc.perform(put("/api/v1/vendors/linked-accounts/{accountId}/deactivate", accountId)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("INACTIVE"));
+                .andExpect(status().isOk());
     }
 
     @Test

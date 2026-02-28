@@ -27,20 +27,8 @@ public class VendorLinkedAccountResponse {
     @JsonProperty("vendorName")
     private String vendorName;
 
-    @JsonProperty("accountNumber")
-    private String accountNumber;
-
-    @JsonProperty("accountType")
-    private String accountType;
-
-    @JsonProperty("accountDetails")
-    private String accountDetails; // JSON string
-
-    @JsonProperty("status")
-    private String status;
-
-    @JsonProperty("activationDate")
-    private LocalDateTime activationDate;
+    @JsonProperty("principalAccountId")
+    private java.util.UUID principalAccountId;
 
     @JsonProperty("createdAt")
     private LocalDateTime createdAt;

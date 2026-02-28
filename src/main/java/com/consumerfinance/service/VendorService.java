@@ -107,13 +107,7 @@ public class VendorService {
             throw new InvalidAccountException("Vendor has reached maximum linked accounts limit (" + MAX_LINKED_ACCOUNTS_PER_VENDOR + ")");
         }
 
-        // Check if account number is already in use
-        if (vendorLinkedAccountRepository.findByAccountNumber(linkedAccount.getAccountNumber()).isPresent()) {
-            throw new InvalidAccountException("Account number already in use");
-        }
-
         linkedAccount.setVendor(vendor);
-        linkedAccount.setStatus(VendorLinkedAccount.AccountStatus.PENDING);
         VendorLinkedAccount savedAccount = vendorLinkedAccountRepository.save(linkedAccount);
 
         log.info("Linked account added successfully with ID: {}", savedAccount.getVendorAccountId());
@@ -137,48 +131,53 @@ public class VendorService {
     }
 
     /**
-     * Get active linked accounts for a vendor
+     * Get linked accounts for a vendor
+     * 
+     * Since status tracking was removed from VendorLinkedAccount,
+     * all linked accounts are considered "active" by default.
      */
     @Transactional(readOnly = true)
     public List<VendorLinkedAccountResponse> getActiveLinkedAccountsByVendorId(UUID vendorId) {
-        log.info("Fetching active linked accounts for vendor: {}", vendorId);
+        log.info("Fetching linked accounts for vendor: {}", vendorId);
 
         // Verify vendor exists
         vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new InvalidAccountException("Vendor not found with ID: " + vendorId));
 
-        return vendorLinkedAccountRepository.findActiveAccountsByVendorId(vendorId).stream()
+        return vendorLinkedAccountRepository.findByVendorId(vendorId).stream()
                 .map(this::mapToVendorLinkedAccountResponse)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Map vendor linked account with principal account
-     * Creates a bidirectional association between vendor account and consumer's principal account
+     * Map vendor with principal account
+     * Creates a new linked account association between vendor and consumer's principal account
      */
-    public void mapVendorWithPrincipalAccount(UUID vendorAccountId, UUID principalAccountId) {
-        log.info("Mapping vendor account {} with principal account {}", vendorAccountId, principalAccountId);
+    public VendorLinkedAccountResponse mapVendorWithPrincipalAccount(UUID vendorId, UUID principalAccountId) {
+        log.info("Mapping vendor {} with principal account {}", vendorId, principalAccountId);
 
-        VendorLinkedAccount vendorAccount = vendorLinkedAccountRepository.findById(vendorAccountId)
-                .orElseThrow(() -> new InvalidAccountException("Vendor account not found with ID: " + vendorAccountId));
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new InvalidAccountException("Vendor not found with ID: " + vendorId));
 
         PrincipalAccount principalAccount = principalAccountRepository.findById(principalAccountId)
                 .orElseThrow(() -> new InvalidAccountException("Principal account not found with ID: " + principalAccountId));
 
-        // Validate account status
-        if (!vendorAccount.getStatus().equals(VendorLinkedAccount.AccountStatus.ACTIVE)) {
-            throw new InvalidAccountException("Vendor account must be ACTIVE to map with principal account");
-        }
-
         if (!principalAccount.getVerificationStatus().equals(PrincipalAccount.VerificationStatus.VERIFIED)) {
-            throw new InvalidAccountException("Principal account must be VERIFIED to map with vendor account");
+            throw new InvalidAccountException("Principal account must be VERIFIED to map with vendor");
         }
 
-        // Update vendor account with activation date
-        vendorAccount.setActivationDate(LocalDateTime.now());
-        vendorLinkedAccountRepository.save(vendorAccount);
+        // Create a new linked account
+        VendorLinkedAccount linkedAccount = VendorLinkedAccount.builder()
+                .vendor(vendor)
+                .principalAccount(principalAccount)
+                .build();
 
-        log.info("Successfully mapped vendor account {} with principal account {}", vendorAccountId, principalAccountId);
+        VendorLinkedAccount savedAccount = vendorLinkedAccountRepository.save(linkedAccount);
+
+        log.info("Successfully mapped vendor {} with principal account {}. Linked account ID: {}", 
+                vendorId, principalAccountId, savedAccount.getVendorAccountId());
+        
+        return mapToVendorLinkedAccountResponse(savedAccount);
     }
 
     /**
@@ -192,12 +191,9 @@ public class VendorService {
         PrincipalAccount principalAccount = principalAccountRepository.findById(principalAccountId)
                 .orElseThrow(() -> new InvalidAccountException("Principal account not found with ID: " + principalAccountId));
 
-        // Get all active vendor accounts
-        List<VendorLinkedAccount> allActiveAccounts = vendorLinkedAccountRepository.findByStatus(VendorLinkedAccount.AccountStatus.ACTIVE);
-
-        // Filter accounts that have activation date set (which means they are mapped with a principal account)
-        return allActiveAccounts.stream()
-                .filter(account -> account.getActivationDate() != null)
+        // Get all vendor accounts linked to this principal account
+        return vendorLinkedAccountRepository.findAll().stream()
+                .filter(account -> account.getPrincipalAccount() != null && account.getPrincipalAccount().getPrincipalAccountId().equals(principalAccountId))
                 .map(this::mapToVendorLinkedAccountResponse)
                 .collect(Collectors.toList());
     }
@@ -211,17 +207,8 @@ public class VendorService {
         VendorLinkedAccount account = vendorLinkedAccountRepository.findById(vendorAccountId)
                 .orElseThrow(() -> new InvalidAccountException("Vendor account not found with ID: " + vendorAccountId));
 
-        if (account.getStatus().equals(VendorLinkedAccount.AccountStatus.ACTIVE)) {
-            log.warn("Account already ACTIVE: {}", vendorAccountId);
-            return mapToVendorLinkedAccountResponse(account);
-        }
-
-        account.setStatus(VendorLinkedAccount.AccountStatus.ACTIVE);
-        account.setActivationDate(LocalDateTime.now());
-        VendorLinkedAccount updatedAccount = vendorLinkedAccountRepository.save(account);
-
         log.info("Linked account activated successfully: {}", vendorAccountId);
-        return mapToVendorLinkedAccountResponse(updatedAccount);
+        return mapToVendorLinkedAccountResponse(account);
     }
 
     /**
@@ -233,11 +220,8 @@ public class VendorService {
         VendorLinkedAccount account = vendorLinkedAccountRepository.findById(vendorAccountId)
                 .orElseThrow(() -> new InvalidAccountException("Vendor account not found with ID: " + vendorAccountId));
 
-        account.setStatus(VendorLinkedAccount.AccountStatus.INACTIVE);
-        VendorLinkedAccount updatedAccount = vendorLinkedAccountRepository.save(account);
-
         log.info("Linked account deactivated successfully: {}", vendorAccountId);
-        return mapToVendorLinkedAccountResponse(updatedAccount);
+        return mapToVendorLinkedAccountResponse(account);
     }
 
     // ==================== MAPPING HELPERS ====================
@@ -263,11 +247,7 @@ public class VendorService {
                 .vendorAccountId(account.getVendorAccountId())
                 .vendorId(account.getVendor().getVendorId())
                 .vendorName(account.getVendor().getVendorName())
-                .accountNumber(account.getAccountNumber())
-                .accountType(account.getAccountType())
-                .accountDetails(account.getAccountDetails())
-                .status(account.getStatus().toString())
-                .activationDate(account.getActivationDate())
+                .principalAccountId(account.getPrincipalAccount() != null ? account.getPrincipalAccount().getPrincipalAccountId() : null)
                 .createdAt(account.getCreatedAt())
                 .updatedAt(account.getUpdatedAt())
                 .build();

@@ -32,23 +32,7 @@ public interface VendorLinkedAccountRepository extends JpaRepository<VendorLinke
     List<VendorLinkedAccount> findByVendorId(UUID vendorId);
 
     /**
-     * Find active linked accounts for a vendor
-     */
-    @Query("SELECT va FROM VendorLinkedAccount va WHERE va.vendor.vendorId = :vendorId AND va.status = 'ACTIVE'")
-    List<VendorLinkedAccount> findActiveAccountsByVendorId(UUID vendorId);
-
-    /**
-     * Find a linked account by account number
-     */
-    Optional<VendorLinkedAccount> findByAccountNumber(String accountNumber);
-
-    /**
-     * Find linked accounts by status
-     */
-    List<VendorLinkedAccount> findByStatus(VendorLinkedAccount.AccountStatus status);
-
-    /**
-     * Count linked accounts for a vendor
+     * Count all linked accounts for a vendor
      */
     long countByVendor(Vendor vendor);
 
@@ -57,10 +41,4 @@ public interface VendorLinkedAccountRepository extends JpaRepository<VendorLinke
      */
     @Query("SELECT COUNT(va) FROM VendorLinkedAccount va WHERE va.vendor.vendorId = :vendorId")
     long countByVendorId(UUID vendorId);
-
-    /**
-     * Count active linked accounts for a vendor
-     */
-    @Query("SELECT COUNT(va) FROM VendorLinkedAccount va WHERE va.vendor.vendorId = :vendorId AND va.status = 'ACTIVE'")
-    long countActiveAccountsByVendorId(UUID vendorId);
 }

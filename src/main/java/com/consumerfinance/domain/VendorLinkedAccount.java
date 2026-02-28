@@ -33,25 +33,10 @@ public class VendorLinkedAccount {
     @JoinColumn(name = "vendor_id", nullable = false, foreignKey = @ForeignKey(name = "fk_vendor_linked_account"))
     private Vendor vendor;
 
-    @NotBlank(message = "Account number is required")
-    @Size(min = 8, max = 34, message = "Account number must be between 8 and 34 characters")
-    @Column(name = "account_number", nullable = false, unique = true, length = 34)
-    private String accountNumber;
-
-    @NotBlank(message = "Account type is required")
-    @Column(name = "account_type", nullable = false, length = 50)
-    private String accountType; // SETTLEMENT, ESCROW, OPERATING, etc.
-
-    @Column(name = "account_details", nullable = false, columnDefinition = "JSON")
-    private String accountDetails; // JSON: {bankCode, ifscCode, accountName, etc.}
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
-    @Builder.Default
-    private AccountStatus status = AccountStatus.PENDING;
-
-    @Column(name = "activation_date")
-    private LocalDateTime activationDate;
+    @NotNull(message = "Principal account is required")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "principal_account_id", nullable = false, foreignKey = @ForeignKey(name = "fk_vendor_linked_principal_account"))
+    private PrincipalAccount principalAccount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -72,9 +57,5 @@ public class VendorLinkedAccount {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public enum AccountStatus {
-        PENDING, ACTIVE, INACTIVE, SUSPENDED, CLOSED
     }
 }
