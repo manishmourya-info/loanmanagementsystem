@@ -4,16 +4,17 @@
 
 DROP TABLE IF EXISTS audit_logs;
 
+CREATE TABLE audit_logs (
+  audit_id BINARY(16) NOT NULL PRIMARY KEY,
+  action VARCHAR(100) NOT NULL,
+  loan_id VARCHAR(255),
+  user_id VARCHAR(100) NOT NULL,
+  amount DECIMAL(19,2),
+  details JSON,
+  status ENUM('SUCCESS','FAILURE','PARTIAL') NOT NULL,
+  timestamp DATETIME NOT NULL,
+  ip_address VARCHAR(45)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS audit_logs (
-  audit_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique audit identifier (UUID)',
-  entity_type VARCHAR(50) NOT NULL COMMENT 'Entity type',
-  entity_id CHAR(36) NOT NULL COMMENT 'Entity identifier',
-  action VARCHAR(20) NOT NULL COMMENT 'Action: CREATE, UPDATE, DELETE',
-  changes JSON COMMENT 'Changes made',
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE INDEX idx_entity_id ON audit_logs(entity_id);
-CREATE INDEX idx_entity_type ON audit_logs(entity_type);
+CREATE INDEX idx_loan_id ON audit_logs(loan_id);
+CREATE INDEX idx_user_id ON audit_logs(user_id);

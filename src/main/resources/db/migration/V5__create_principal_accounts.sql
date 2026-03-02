@@ -5,12 +5,14 @@
 DROP TABLE IF EXISTS principal_accounts;
 
 CREATE TABLE principal_accounts (
-  principal_account_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique principal account identifier (UUID)',
-  consumer_id CHAR(36) NOT NULL UNIQUE COMMENT 'Foreign Key to consumers.consumer_id',
+  principal_account_id BINARY(16) NOT NULL PRIMARY KEY COMMENT 'Unique principal account identifier (UUID)',
+  consumer_id BINARY(16) NOT NULL UNIQUE COMMENT 'Foreign Key to consumers.consumer_id',
   account_number VARCHAR(34) NOT NULL UNIQUE COMMENT 'Account number (IBAN compliant)',
   account_holder_name VARCHAR(100) NOT NULL COMMENT 'Account holder name',
   bank_code VARCHAR(20) NOT NULL COMMENT 'Bank code',
-  verification_status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'Verification status: PENDING, VERIFIED, FAILED, REJECTED',
+  verification_status ENUM(
+    'PENDING', 'VERIFIED', 'FAILED', 'REJECTED'
+  ) NOT NULL DEFAULT 'PENDING',
   linked_date TIMESTAMP NULL COMMENT 'Date when account was linked',
   verified_date TIMESTAMP NULL COMMENT 'Date when account was verified',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

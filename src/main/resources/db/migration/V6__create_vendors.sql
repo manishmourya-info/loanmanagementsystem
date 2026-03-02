@@ -5,14 +5,16 @@
 DROP TABLE IF EXISTS vendors;
 
 CREATE TABLE vendors (
-  vendor_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique vendor identifier (UUID)',
+  vendor_id BINARY(16) NOT NULL PRIMARY KEY COMMENT 'Unique vendor identifier (UUID)',
   vendor_name VARCHAR(100) NOT NULL COMMENT 'Vendor name',
   business_type VARCHAR(50) NOT NULL COMMENT 'Business type',
   registration_number VARCHAR(50) NOT NULL UNIQUE COMMENT 'Registration number',
   gst_number VARCHAR(15) NOT NULL UNIQUE COMMENT 'GST number',
   contact_email VARCHAR(100) NOT NULL COMMENT 'Contact email',
   contact_phone VARCHAR(20) NOT NULL COMMENT 'Contact phone',
-  status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Vendor status',
+  status ENUM(
+    'ACTIVE', 'INACTIVE', 'SUSPENDED', 'CLOSED'
+  ) NOT NULL DEFAULT 'ACTIVE',
   registration_date TIMESTAMP NOT NULL COMMENT 'Registration date',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

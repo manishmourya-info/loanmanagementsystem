@@ -184,7 +184,7 @@ public class LoanRepaymentService {
      */
     private RepaymentResponse mapToRepaymentResponse(LoanRepayment repayment) {
         return RepaymentResponse.builder()
-                .id(repayment.getId())
+                .id(repayment.getId().toString())
                 .loanId(repayment.getLoan().getId().toString())
                 .installmentNumber(repayment.getInstallmentNumber())
                 .principalAmount(repayment.getPrincipalAmount())

@@ -4,19 +4,21 @@
 
 DROP TABLE IF EXISTS consumers;
 
+DROP TABLE IF EXISTS consumers;
+
 CREATE TABLE consumers (
-  consumer_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique consumer identifier (UUID)',
-  email VARCHAR(100) NOT NULL UNIQUE COMMENT 'Consumer email address',
-  first_name VARCHAR(50) NOT NULL COMMENT 'First name',
-  last_name VARCHAR(50) NOT NULL COMMENT 'Last name',
-  phone VARCHAR(20) NOT NULL COMMENT 'Phone number',
-  date_of_birth DATE NOT NULL COMMENT 'Date of birth',
-  pan_number VARCHAR(20) NOT NULL UNIQUE COMMENT 'PAN number',
-  status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Consumer status',
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  consumer_id BINARY(16) NOT NULL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone VARCHAR(15) NOT NULL,
+  identity_type VARCHAR(50) NOT NULL,
+  identity_number VARCHAR(50) NOT NULL,
+  status ENUM('ACTIVE','INACTIVE','SUSPENDED','CLOSED') NOT NULL,
+  kyc_status ENUM('PENDING','VERIFIED','REJECTED','EXPIRED') NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
   version BIGINT DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_email ON consumers(email);
 CREATE INDEX idx_status ON consumers(status);

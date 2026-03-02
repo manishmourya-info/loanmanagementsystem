@@ -7,9 +7,9 @@
 DROP TABLE IF EXISTS vendor_linked_accounts;
 
 CREATE TABLE vendor_linked_accounts (
-  vendor_account_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique vendor account identifier (UUID)',
-  vendor_id CHAR(36) NOT NULL COMMENT 'Foreign Key to vendors.vendor_id',
-  principal_account_id CHAR(36) NOT NULL COMMENT 'Foreign Key to principal_accounts.principal_account_id',
+  vendor_account_id BINARY(16) NOT NULL PRIMARY KEY COMMENT 'Unique vendor account identifier (UUID)',
+  vendor_id BINARY(16) NOT NULL COMMENT 'Foreign Key to vendors.vendor_id',
+  principal_account_id BINARY(16) NOT NULL COMMENT 'Foreign Key to principal_accounts.principal_account_id',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation timestamp',
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp',
   version BIGINT DEFAULT 0 COMMENT 'Optimistic locking version',
