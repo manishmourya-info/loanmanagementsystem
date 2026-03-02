@@ -10,7 +10,7 @@ CREATE TABLE audit_logs (
   loan_id VARCHAR(255),
   user_id VARCHAR(100) NOT NULL,
   amount DECIMAL(19,2),
-  details JSON,
+  details LONGTEXT,
   status ENUM('SUCCESS','FAILURE','PARTIAL') NOT NULL,
   timestamp DATETIME NOT NULL,
   ip_address VARCHAR(45)
