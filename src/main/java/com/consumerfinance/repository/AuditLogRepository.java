@@ -14,7 +14,7 @@ import java.util.UUID;
  * T012: Audit log repository
  */
 @Repository
-public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
+public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
 
     /**
      * Find audit logs by loanId

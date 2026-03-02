@@ -4,7 +4,9 @@
 -- Updated: Removed account_details, account_number, account_type, status, activation_date
 --          Added principal_account_id for mapping with PrincipalAccount
 
-CREATE TABLE IF NOT EXISTS vendor_linked_accounts (
+DROP TABLE IF EXISTS vendor_linked_accounts;
+
+CREATE TABLE vendor_linked_accounts (
   vendor_account_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique vendor account identifier (UUID)',
   vendor_id CHAR(36) NOT NULL COMMENT 'Foreign Key to vendors.vendor_id',
   principal_account_id CHAR(36) NOT NULL COMMENT 'Foreign Key to principal_accounts.principal_account_id',

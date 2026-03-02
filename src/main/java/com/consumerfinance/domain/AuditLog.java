@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * AuditLog Entity (T012)
@@ -25,9 +26,9 @@ import java.time.LocalDateTime;
 public class AuditLog {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "audit_id")
-    private Long auditId;
+    private UUID auditId;
 
     @NotBlank(message = "Action is required")
     @Column(name = "action", nullable = false, length = 100)

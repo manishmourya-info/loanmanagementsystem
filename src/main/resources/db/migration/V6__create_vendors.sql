@@ -2,7 +2,9 @@
 -- Description: Create vendors table for vendor information
 -- Deployed: 2026-02-25
 
-CREATE TABLE IF NOT EXISTS vendors (
+DROP TABLE IF EXISTS vendors;
+
+CREATE TABLE vendors (
   vendor_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique vendor identifier (UUID)',
   vendor_name VARCHAR(100) NOT NULL COMMENT 'Vendor name',
   business_type VARCHAR(50) NOT NULL COMMENT 'Business type',

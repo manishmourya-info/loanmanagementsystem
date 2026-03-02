@@ -2,7 +2,9 @@
 -- Description: Create personal_loans table for loan management
 -- Deployed: 2026-02-20
 
-CREATE TABLE IF NOT EXISTS personal_loans (
+DROP TABLE IF EXISTS personal_loans;
+
+CREATE TABLE personal_loans (
   loan_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique loan identifier (UUID)',
   consumer_id CHAR(36) NOT NULL COMMENT 'Foreign Key to consumers.consumer_id',
   principal_amount DECIMAL(15, 2) NOT NULL COMMENT 'Loan principal amount',
@@ -16,3 +18,5 @@ CREATE TABLE IF NOT EXISTS personal_loans (
 
 CREATE INDEX idx_consumer_id ON personal_loans(consumer_id);
 CREATE INDEX idx_status ON personal_loans(status);
+
+-- Foreign key constraint added in V9 after consumers table is created

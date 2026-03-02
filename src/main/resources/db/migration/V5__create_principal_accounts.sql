@@ -2,7 +2,9 @@
 -- Description: Create principal_accounts table for consumer's primary banking accounts
 -- Deployed: 2026-02-25
 
-CREATE TABLE IF NOT EXISTS principal_accounts (
+DROP TABLE IF EXISTS principal_accounts;
+
+CREATE TABLE principal_accounts (
   principal_account_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique principal account identifier (UUID)',
   consumer_id CHAR(36) NOT NULL UNIQUE COMMENT 'Foreign Key to consumers.consumer_id',
   account_number VARCHAR(34) NOT NULL UNIQUE COMMENT 'Account number (IBAN compliant)',

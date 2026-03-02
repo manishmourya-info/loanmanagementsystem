@@ -2,7 +2,9 @@
 -- Description: Create loan_repayments table for tracking loan repayments
 -- Deployed: 2026-02-20
 
-CREATE TABLE IF NOT EXISTS loan_repayments (
+DROP TABLE IF EXISTS loan_repayments;
+
+CREATE TABLE loan_repayments (
   repayment_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique repayment identifier (UUID)',
   loan_id CHAR(36) NOT NULL COMMENT 'Foreign Key to personal_loans.loan_id',
   repayment_amount DECIMAL(15, 2) NOT NULL COMMENT 'Repayment amount',

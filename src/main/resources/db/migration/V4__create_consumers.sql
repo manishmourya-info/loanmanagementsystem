@@ -2,7 +2,9 @@
 -- Description: Create consumers table for consumer information
 -- Deployed: 2026-02-25
 
-CREATE TABLE IF NOT EXISTS consumers (
+DROP TABLE IF EXISTS consumers;
+
+CREATE TABLE consumers (
   consumer_id CHAR(36) NOT NULL PRIMARY KEY COMMENT 'Unique consumer identifier (UUID)',
   email VARCHAR(100) NOT NULL UNIQUE COMMENT 'Consumer email address',
   first_name VARCHAR(50) NOT NULL COMMENT 'First name',
